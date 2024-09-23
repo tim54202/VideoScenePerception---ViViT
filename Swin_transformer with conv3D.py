@@ -22,61 +22,7 @@ import matplotlib.pyplot as plt
 import torchvision.models.video as video_models
 import time
 
-class ResNet3D18(nn.Module):
-    def __init__(self, num_classes, num_frames=32):
-        super(ResNet3D18, self).__init__()
-        
-        # Load pre-trained 3D ResNet18 model
-        self.base_model = video_models.r3d_18(pretrained=True)
-        
-        # Modify the first convolution layer to accept 3 input channels
-        self.base_model.stem[0] = nn.Conv3d(3, 64, kernel_size=(3, 3, 3), 
-                                            stride=(1, 1, 1), padding=(1, 1, 1), bias=False)
-        
-        # Replace the last fully connected layer
-        in_features = self.base_model.fc.in_features
-        self.base_model.fc = nn.Linear(in_features, num_classes)
-        
-        # Add dropout
-        self.dropout = nn.Dropout(0.7)
-        
-    def forward(self, x):
-        print("Input shape:", x.shape)
-        # x shape: (B, T, C, H, W)
-        B, T, C, H, W = x.shape
-        
-        # Rearrange dimensions to fit ResNet3D
-        x = x.permute(0, 2, 1, 3, 4).contiguous()  # (B, C, T, H, W)
-        
-        # Pass through base ResNet3D model
-        features = self.base_model.stem(x)
-        print("Output shape of stem:", features.shape)
-        
-        features = self.base_model.layer1(features)
-        print("Output shape of layer1:", features.shape)
-        
-        features = self.base_model.layer2(features) 
-        print("Output shape of layer2:", features.shape)
-        
-        features = self.base_model.layer3(features)
-        print("Output shape of layer3:", features.shape)
-        
-        features = self.base_model.layer4(features)
-        print("Output shape of layer4:", features.shape)
-        
-        # Global average pooling
-        features = self.base_model.avgpool(features)
-        features = features.view(B, -1)  # (B, D)
-        
-        # Dropout
-        features = self.dropout(features)
-        
-        # Classification
-        output = self.base_model.fc(features)
-        
-        return output
 
-        #13.87 GMac, 33.14 M
  
 
 # Modified VideoSwinTransformerWithTokens class
@@ -137,53 +83,7 @@ class VideoSwinTransformerWithTokens(nn.Module):
 
         #499.47 GMac, 95.15M
 
-class VideoSwinTransformerSingleEncoder(nn.Module):
-    def __init__(self, base_model, num_classes, num_frames=32, input_channels=96):
-        super(VideoSwinTransformerSingleEncoder, self).__init__()
-        self.conv3d_up = nn.Conv3d(3, 96, kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1))
-        self.conv3d_down = nn.Conv3d(96, 3, kernel_size=(1, 1, 1), stride=(1, 1, 1))
-        self.base_model = base_model
-        self.num_frames = num_frames
-        
-        # Get the output dimension of Swin Transformer
-        with torch.no_grad():
-            dummy_input = torch.zeros(1, 3, 224, 224)
-            dummy_output = self.base_model.forward_features(dummy_input)
-            swin_output_dim = dummy_output.shape[-1]
-        
-        # Classifier
-        self.classifier = nn.Linear(swin_output_dim, num_classes)
-        self.dropout = nn.Dropout(0.7)
 
-    def forward(self, x):
-        print("Input shape:", x.shape)
-        B, T, C, H, W = x.shape
-        x = x.transpose(1, 2)  # (B, C, T, H, W)
-        
-        # 3D convolution processing: 3 -> 96 -> 3
-        x = self.conv3d_up(x)  # Output shape (B, 96, T, H, W)
-        x = self.conv3d_down(x)  # Output shape (B, 3, T, H, W)
-        
-        # Reshape to fit Swin Transformer
-        x = x.permute(0, 2, 1, 3, 4).contiguous()  # Convert to (B, T, C, H, W)
-        spatial_features = []
-        for t in range(T):
-            frame = x[:, t, :, :, :]  # (B, C, H, W)
-            frame_features = self.base_model(frame)  # (B, D)
-            spatial_features.append(frame_features)
-        spatial_features = torch.stack(spatial_features, dim=1)  # (B, T, D)
-        
-        # Temporal dimension average pooling
-        combined_features = spatial_features.mean(1)  # Average operation (B, D)
-        
-        # Apply dropout before classification
-        combined_features = self.dropout(combined_features)
-        
-        # Classification
-        output = self.classifier(combined_features)
-        return output
-
-        #499.2 GMac, 86.75M
 
 
 # Modified ExGAN class
@@ -385,7 +285,7 @@ class ExGAN:
         plt.show()
 
 def main():
-    models_list = ['ResNet3D18']
+    models_list = ['Swin-Transformer-base1']
     for model in models_list:
         exgan = ExGAN(model)
         exgan.train()
