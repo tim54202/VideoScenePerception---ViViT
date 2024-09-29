@@ -4,12 +4,12 @@ With the increasing complexity of video data in modern applications, there is a 
 
 The project structure is shown in the file project structure.pdf file.
 
-# dataset_1stream_sinlepply.py
-
+## Manage dataset (Label and split dataset)
+dataset_1stream_sinlepply.py
 This file is to manage and label the dataset which is already cut into several frames and reshaped into 224 * 224. The dataset is a total of 48 pilots participated in the experiment, with 24 flights classified as well-performing and 24 as poor-performing. Each video has a total duration of 384 seconds, and every 32 seconds segment is treated as a separate data sample. Therefore, there are 576 data samples in total. In this case, only labeled two classes in 1 and 0, and the classification is defined by a professional institute so I just labeled the data only.
 
-# Swin_transformer with conv3D.py
-
+## Model Structure (3D CNN + Swin Transformers)
+Swin_transformer with conv3D.py
 The model is inspired by the ViViT’s factorised encoder architecture but is tailored to enhance video classification by effectively integrating both spatial and temporal encoding. This model leverages three key components:
 • Conv3D:
 Used for initial feature extraction across spatial and temporal dimensions, providing a foundation of spatiotemporal features.
@@ -22,8 +22,8 @@ The flow is shown in the project structure file.
 
 Another class is for training and testing.
 
-# visualise.py
-
+## Visualise 3D grad-cam and attention rollout map
+visualise.py
 In this file, to describe the methodologies and results for visualising the decision- making processes of the model used in this project. The focus is on identifying key frames, calculating importance scores, and providing visualisations through techniques such as 3D Grad-CAM and Attention Rollout. These methods offer insights into how the models interpret and prioritize information across the temporal dimension of video data.
 
 
