@@ -18,8 +18,6 @@ Processes individual video frames to capture intricate spatial features, utilisi
 • Transformer Encoder:
 Enhances the model’s capability to understand temporal relationships by processing the sequence of frame features, capturing dependencies across time steps.
 
-The flow is shown in the project structure file.
-
 Another class is for training and testing.
 
 ## Visualise 3D grad-cam and attention rollout map
