@@ -2,7 +2,7 @@
 
 With the increasing complexity of video data in modern applications, there is a growing need for models that can effectively capture both spatial and temporal dependencies. Traditional CNN-based approaches have shown limitations in handling long-range dependencies and global context in video sequences. This study addresses these challenges by exploring the integration of 3D Convolutional Neural Networks (3D CNNs) with the Swin Transformer to develop an advanced video classification model. We introduce a novel hybrid model, the Dual Encoder, which combines the spatiotemporal capabilities of Conv3D layers with the hierarchical attention mechanisms of the Swin Transformer. The model is designed to enhance video classification by effectively capturing complex features within video sequences. Comprehensive experiments, including comparisons with a Single Encoder model and the ResNet3D18 model, validate the effectiveness of the proposed approach. Additionally, visualisation techniques such as 3D Grad-CAM and Attention Rollout are employed to provide deeper insights into the model’s decision-making process. The results demonstrate that the Dual Encoder model significantly outperforms traditional methods in terms of accuracy and interpretability, establishing it as a robust solution for video classification tasks in various domains.
 
-![GITHUB](Images/flow chart.png)
+![GITHUB](Images/flow_chart.png)
 
 ## Manage dataset (Label and split dataset)
 dataset_1stream_sinlepply.py
